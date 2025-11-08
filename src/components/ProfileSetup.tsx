@@ -53,13 +53,12 @@ const ProfileSetup = ({ onComplete }: Props) => {
   const handlePhotoChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      try {
-        const base64 = await fileToBase64(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const base64 = reader.result as string;
         setPhotoPreview(base64);
-        setValue('profilePhoto', file);
-      } catch (error) {
-        console.error('Error converting file to base64:', error);
-      }
+      };
+      reader.readAsDataURL(file);
     }
   };
 

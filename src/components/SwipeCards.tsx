@@ -10,141 +10,6 @@ interface Props {
   currentUser: UserType;
 }
 
-// Demo mode - matches App.tsx
-const DEMO_MODE = true;
-
-// Mock users for demo mode
-const MOCK_USERS: UserType[] = [
-  {
-    id: '1',
-    _id: '1',
-    name: 'Sarah Chen',
-    email: 'sarah@test.com',
-    age: 28,
-    skills: ['Figma', 'Adobe XD', 'User Research', 'Prototyping', 'Design Systems'],
-    profilePhoto: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&h=400&fit=crop&crop=face',
-    bio: 'UI/UX Designer with 5 years of experience. Love creating beautiful and intuitive user experiences.',
-    location: 'New York, NY',
-    experience: '5 years',
-    interests: ['Design Thinking', 'Product Design', 'Accessibility', 'Animation'],
-    lookingFor: 'project-collaborator',
-    availability: 'part-time',
-    createdAt: new Date(),
-  },
-  {
-    id: '2',
-    _id: '2',
-    name: 'Michael Davis',
-    email: 'michael@test.com',
-    age: 30,
-    skills: ['Python', 'TensorFlow', 'PyTorch', 'Data Science', 'Research'],
-    profilePhoto: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&h=400&fit=crop&crop=face',
-    bio: 'Machine Learning Engineer specializing in NLP and computer vision. Published researcher.',
-    location: 'Boston, MA',
-    experience: '7 years',
-    interests: ['Deep Learning', 'AI Ethics', 'Research', 'Education'],
-    lookingFor: 'hackathon-partner',
-    availability: 'weekends',
-    createdAt: new Date(),
-  },
-  {
-    id: '3',
-    _id: '3',
-    name: 'Emily Rodriguez',
-    email: 'emily@test.com',
-    age: 26,
-    skills: ['Product Strategy', 'Agile', 'SQL', 'Analytics', 'User Stories'],
-    profilePhoto: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400&h=400&fit=crop&crop=face',
-    bio: 'Product Manager with a technical background. Love working at the intersection of business and technology.',
-    location: 'Austin, TX',
-    experience: '4 years',
-    interests: ['Product Management', 'Startups', 'Growth Hacking', 'Customer Development'],
-    lookingFor: 'co-founder',
-    availability: 'flexible',
-    createdAt: new Date(),
-  },
-  {
-    id: '4',
-    _id: '4',
-    name: 'David Kim',
-    email: 'david@test.com',
-    age: 27,
-    skills: ['Kubernetes', 'CI/CD', 'Terraform', 'Python', 'Linux'],
-    profilePhoto: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop&crop=face',
-    bio: 'DevOps Engineer passionate about automation and infrastructure. Building tools to make developers lives easier.',
-    location: 'Seattle, WA',
-    experience: '5 years',
-    interests: ['Infrastructure', 'Automation', 'Open Source', 'Cloud Native'],
-    lookingFor: 'project-collaborator',
-    availability: 'part-time',
-    createdAt: new Date(),
-  },
-  {
-    id: '5',
-    _id: '5',
-    name: 'Jessica Taylor',
-    email: 'jessica@test.com',
-    age: 24,
-    skills: ['React Native', 'Flutter', 'iOS', 'Android', 'Firebase'],
-    profilePhoto: 'https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=400&h=400&fit=crop&crop=face',
-    bio: 'Mobile developer specializing in React Native and Flutter. Love building cross-platform apps.',
-    location: 'Los Angeles, CA',
-    experience: '3 years',
-    interests: ['Mobile Apps', 'UI Animation', 'App Store Optimization', 'User Engagement'],
-    lookingFor: 'hackathon-partner',
-    availability: 'weekends',
-    createdAt: new Date(),
-  },
-  {
-    id: '6',
-    _id: '6',
-    name: 'Ryan Martinez',
-    email: 'ryan@test.com',
-    age: 29,
-    skills: ['Solidity', 'Web3.js', 'Smart Contracts', 'Ethereum', 'DeFi'],
-    profilePhoto: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=400&h=400&fit=crop&crop=face',
-    bio: 'Blockchain developer and Web3 enthusiast. Building the decentralized future.',
-    location: 'Miami, FL',
-    experience: '4 years',
-    interests: ['Blockchain', 'Cryptocurrency', 'DeFi', 'NFTs'],
-    lookingFor: 'co-founder',
-    availability: 'full-time',
-    createdAt: new Date(),
-  },
-  {
-    id: '7',
-    _id: '7',
-    name: 'Olivia Brown',
-    email: 'olivia@test.com',
-    age: 31,
-    skills: ['Python', 'R', 'SQL', 'Tableau', 'Statistical Modeling'],
-    profilePhoto: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=400&h=400&fit=crop&crop=face',
-    bio: 'Data Scientist with expertise in predictive analytics and visualization. Making data tell stories.',
-    location: 'Chicago, IL',
-    experience: '8 years',
-    interests: ['Data Visualization', 'Machine Learning', 'Business Intelligence', 'Statistics'],
-    lookingFor: 'mentor',
-    availability: 'flexible',
-    createdAt: new Date(),
-  },
-  {
-    id: '8',
-    _id: '8',
-    name: 'James Wilson',
-    email: 'james@test.com',
-    age: 33,
-    skills: ['Penetration Testing', 'Network Security', 'Cryptography', 'Security Audits', 'Python'],
-    profilePhoto: 'https://images.unsplash.com/photo-1463453091185-61582044d556?w=400&h=400&fit=crop&crop=face',
-    bio: 'Cybersecurity specialist and ethical hacker. Helping companies secure their infrastructure.',
-    location: 'Washington, DC',
-    experience: '10 years',
-    interests: ['Cybersecurity', 'Ethical Hacking', 'Privacy', 'Security Research'],
-    lookingFor: 'project-collaborator',
-    availability: 'part-time',
-    createdAt: new Date(),
-  },
-];
-
 const SwipeCards = ({ currentUser }: Props) => {
   const [users, setUsers] = useState<UserType[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -165,21 +30,16 @@ const SwipeCards = ({ currentUser }: Props) => {
     try {
       setLoading(true);
       
-      if (DEMO_MODE) {
-        // Use mock users in demo mode
-        setUsers(MOCK_USERS);
-        setCurrentIndex(0);
-      } else {
-        // Load from API
-        const availableUsers = await usersAPI.discover();
-        setUsers(availableUsers);
-        setCurrentIndex(0);
-      }
+      // Load all users from localStorage
+      const allUsers = JSON.parse(localStorage.getItem('allUsers') || '[]');
+      
+      // Filter out current user
+      const otherUsers = allUsers.filter((user: UserType) => user.id !== currentUser.id);
+      
+      setUsers(otherUsers);
+      setCurrentIndex(0);
     } catch (error) {
       console.error('Failed to load users:', error);
-      // Fallback to mock users if API fails
-      setUsers(MOCK_USERS);
-      setCurrentIndex(0);
     } finally {
       setLoading(false);
     }
@@ -250,28 +110,12 @@ const SwipeCards = ({ currentUser }: Props) => {
       config: { tension: 200, friction: 10 }
     });
 
-    if (!DEMO_MODE) {
-      try {
-        // Send swipe to backend - use _id or id
-        const userId = currentUserData._id || currentUserData.id;
-        const response = await swipesAPI.swipe(userId, isLike ? 'like' : 'pass');
-        
-        // Check if it's a match
-        if (response.isMatch && response.match) {
-          setMatchedUser(currentUserData);
-          setShowMatchModal(true);
-        }
-      } catch (error) {
-        console.error('Failed to save swipe:', error);
-      }
-    } else {
-      // Demo mode: randomly show match (20% chance on likes)
-      if (isLike && Math.random() > 0.8) {
-        setTimeout(() => {
-          setMatchedUser(currentUserData);
-          setShowMatchModal(true);
-        }, 300);
-      }
+    // Random match on likes (20% chance)
+    if (isLike && Math.random() > 0.8) {
+      setTimeout(() => {
+        setMatchedUser(currentUserData);
+        setShowMatchModal(true);
+      }, 300);
     }
 
     // Move to next card after animation

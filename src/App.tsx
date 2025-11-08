@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { User } from './types';
 
 // Components
+import LandingPage from './components/LandingPage';
 import ProfileSetup from './components/ProfileSetup';
 import SwipeCards from './components/SwipeCards';
 import Matches from './components/Matches';
@@ -32,7 +33,7 @@ function App() {
       id: 'user-' + Date.now(),
       _id: 'user-' + Date.now(),
       name: userData.name,
-      email: userData.email || 'user@crewlyx.com',
+      email: userData.email || '',
       age: Number(userData.age),
       skills: userData.skills || [],
       profilePhoto: userData.profilePhoto || 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&h=400&fit=crop&crop=face',
@@ -45,8 +46,14 @@ function App() {
       createdAt: new Date(),
     };
 
-    // Save to localStorage
+    // Save current user
     localStorage.setItem('currentUser', JSON.stringify(user));
+    
+    // Add to all users list (so other users can see this profile)
+    const allUsers = JSON.parse(localStorage.getItem('allUsers') || '[]');
+    allUsers.push(user);
+    localStorage.setItem('allUsers', JSON.stringify(allUsers));
+    
     setCurrentUser(user);
   };
 
@@ -70,6 +77,14 @@ function App() {
     <Router>
       <div className="min-h-screen">
         <Routes>
+          {/* Landing Page - First screen */}
+          <Route 
+            path="/" 
+            element={
+              currentUser ? <Navigate to="/swipe" replace /> : <LandingPage />
+            } 
+          />
+          
           {/* Profile Setup Route */}
           <Route 
             path="/setup" 
@@ -80,7 +95,7 @@ function App() {
             } 
           />
 
-          {/* Main App Routes */}
+          {/* Main App Routes - Protected */}
           {currentUser ? (
             <>
               <Route path="/swipe" element={
@@ -107,14 +122,10 @@ function App() {
                   <Navigation />
                 </div>
               } />
-              <Route path="/" element={<Navigate to="/swipe" replace />} />
               <Route path="*" element={<Navigate to="/swipe" replace />} />
             </>
           ) : (
-            <>
-              <Route path="/" element={<Navigate to="/setup" replace />} />
-              <Route path="*" element={<Navigate to="/setup" replace />} />
-            </>
+            <Route path="*" element={<Navigate to="/" replace />} />
           )}
         </Routes>
       </div>
