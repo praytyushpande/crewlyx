@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Sample Users - CrewlyX</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #1a1a2e;
+            color: #fff;
+        }
+        .container {
+            background: #16213e;
+            padding: 30px;
+            border-radius: 10px;
+        }
+        button {
+            width: 100%;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border: none;
+            background: #e94560;
+            color: #fff;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #d63447;
+        }
+        .success {
+            background: #2d4a2b;
+            border: 1px solid #4caf50;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        .user-list {
+            max-height: 400px;
+            overflow-y: auto;
+            margin: 20px 0;
+        }
+        .user-card {
+            background: #0f3460;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .user-photo {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>🎉 Add Sample Users to CrewlyX</h1>
+    <p>Click the button below to add 15 sample users so you can demo the swipe feature!</p>
+
+    <button onclick="addSampleUsers()">Add 15 Sample Users</button>
+    <button onclick="clearAllUsers()" style="background: #666;">Clear All Users</button>
+    <button onclick="window.location.href='http://localhost:3000'" style="background: #0f3460;">Go
+        to CrewlyX App
+    </button>
+
+    <div id="result"></div>
+    <div id="usersList"></div>
+</div>
+
+<script>
+
+    const sampleUsers = [
+        {
+            name: 'Sarah Chen',
+            age: 28,
+            skills: ['Figma', 'Adobe XD', 'User Research', 'Prototyping'],
+            profilePhoto: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&h=400&fit=crop&crop=face',
+            bio: 'UI/UX Designer with 5 years of experience. Love creating beautiful and intuitive user experiences.',
+            location: 'New York, NY',
+            experience: '5 years',
+            interests: ['Design Thinking', 'Product Design', 'Accessibility'],
+            lookingFor: 'project-collaborator',
+            availability: 'part-time',
+        },
+        {
+            name: 'Michael Davis',
+            age: 30,
+            skills: ['Python', 'TensorFlow', 'PyTorch', 'Data Science'],
+            profilePhoto: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&h=400&fit=crop&crop=face',
+            bio: 'Machine Learning Engineer specializing in NLP and computer vision.',
+            location: 'Boston, MA',
+            experience: '7 years',
+            interests: ['Deep Learning', 'AI Ethics', 'Research'],
+            lookingFor: 'hackathon-partner',
+            availability: 'weekends',
+        },
+        {
+            name: 'Emily Rodriguez',
+            age: 26,
+            skills: ['Product Strategy', 'Agile', 'SQL', 'Analytics'],
+            profilePhoto: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400&h=400&fit=crop&crop=face',
+            bio: 'Product Manager with a technical background. Love working at the intersection of business and technology.',
+            location: 'Austin, TX',
+            experience: '4 years',
+            interests: ['Product Management', 'Startups', 'Growth Hacking'],
+            lookingFor: 'co-founder',
+            availability: 'flexible',
+        },
+        {
+            name: 'David Kim',
+            age: 27,
+            skills: ['Kubernetes', 'CI/CD', 'Terraform', 'Python'],
+            profilePhoto: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop&crop=face',
+            bio: 'DevOps Engineer passionate about automation and infrastructure.',
+            location: 'Seattle, WA',
+            experience: '5 years',
+            interests: ['Infrastructure', 'Automation', 'Open Source'],
+            lookingFor: 'project-collaborator',
+            availability: 'part-time',
+        },
+        {
+            name: 'Jessica Taylor',
+            age: 24,
+            skills: ['React Native', 'Flutter', 'iOS', 'Android'],
+            profilePhoto: 'https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=400&h=400&fit=crop&crop=face',
+            bio: 'Mobile developer specializing in React Native and Flutter. Love building cross-platform apps.',
+            location: 'Los Angeles, CA',
+            experience: '3 years',
+            interests: ['Mobile Apps', 'UI Animation', 'User Engagement'],
+            lookingFor: 'hackathon-partner',
+            availability: 'weekends',
+        },
+        {
+            name: 'Ryan Martinez',
+            age: 29,
+            skills: ['Solidity', 'Web3.js', 'Smart Contracts', 'Ethereum'],
+            profilePhoto: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=400&h=400&fit=crop&crop=face',
+            bio: 'Blockchain developer and Web3 enthusiast. Building the decentralized future.',
+            location: 'Miami, FL',
+            experience: '4 years',
+            interests: ['Blockchain', 'Cryptocurrency', 'DeFi'],
+            lookingFor: 'co-founder',
+            availability: 'full-time',
+        },
+        {
+            name: 'Olivia Brown',
+            age: 31,
+            skills: ['Python', 'R', 'SQL', 'Tableau'],
+            profilePhoto: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=400&h=400&fit=crop&crop=face',
+            bio: 'Data Scientist with expertise in predictive analytics and visualization.',
+            location: 'Chicago, IL',
+            experience: '8 years',
+            interests: ['Data Visualization', 'Machine Learning', 'Statistics'],
+            lookingFor: 'mentor',
+            availability: 'flexible',
+        },
+        {
+            name: 'James Wilson',
+            age: 33,
+            skills: ['Penetration Testing', 'Network Security', 'Cryptography'],
+            profilePhoto: 'https://images.unsplash.com/photo-1463453091185-61582044d556?w=400&h=400&fit=crop&crop=face',
+            bio: 'Cybersecurity specialist and ethical hacker. Helping companies secure their infrastructure.',
+            location: 'Washington, DC',
+            experience: '10 years',
+            interests: ['Cybersecurity', 'Ethical Hacking', 'Privacy'],
+            lookingFor: 'project-collaborator',
+            availability: 'part-time',
+        },
+        {
+            name: 'Sophia Anderson',
+            age: 26,
+            skills: ['Unity', 'C#', 'Unreal Engine', 'Game Design'],
+            profilePhoto: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&h=400&fit=crop&crop=face',
+            bio: 'Game developer with a passion for immersive experiences.',
+            location: 'Portland, OR',
+            experience: '6 years',
+            interests: ['Game Development', 'Virtual Reality', 'Storytelling'],
+            lookingFor: 'hackathon-partner',
+            availability: 'weekends',
+        },
+        {
+            name: 'Alex Thompson',
+            age: 25,
+            skills: ['React', 'Node.js', 'MongoDB', 'AWS'],
+            profilePhoto: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&h=400&fit=crop&crop=face',
+            bio: 'Full-stack developer passionate about building scalable applications.',
+            location: 'San Francisco, CA',
+            experience: '4 years',
+            interests: ['Cloud Computing', 'Microservices', 'API Design'],
+            lookingFor: 'co-founder',
+            availability: 'full-time',
+        },
+        {
+            name: 'Priya Patel',
+            age: 27,
+            skills: ['Marketing', 'Content Strategy', 'SEO', 'Analytics'],
+            profilePhoto: 'https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=400&h=400&fit=crop&crop=faces',
+            bio: 'Growth marketer with a data-driven approach. Love scaling startups.',
+            location: 'Denver, CO',
+            experience: '5 years',
+            interests: ['Digital Marketing', 'Content Creation', 'Brand Building'],
+            lookingFor: 'co-founder',
+            availability: 'flexible',
+        },
+        {
+            name: 'Marcus Johnson',
+            age: 29,
+            skills: ['Swift', 'SwiftUI', 'iOS Development', 'ARKit'],
+            profilePhoto: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=400&h=400&fit=crop&crop=faces',
+            bio: 'iOS developer creating next-gen mobile experiences with AR.',
+            location: 'San Diego, CA',
+            experience: '6 years',
+            interests: ['Augmented Reality', 'Mobile UX', 'App Performance'],
+            lookingFor: 'project-collaborator',
+            availability: 'part-time',
+        },
+        {
+            name: 'Nina Kowalski',
+            age: 24,
+            skills: ['Go', 'Docker', 'Microservices', 'gRPC'],
+            profilePhoto: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=400&h=400&fit=crop&crop=faces',
+            bio: 'Backend engineer specializing in high-performance distributed systems.',
+            location: 'Berlin, Germany',
+            experience: '3 years',
+            interests: ['System Design', 'Performance Optimization', 'Scalability'],
+            lookingFor: 'hackathon-partner',
+            availability: 'weekends',
+        },
+        {
+            name: 'Carlos Mendez',
+            age: 32,
+            skills: ['Vue.js', 'TypeScript', 'GraphQL', 'Firebase'],
+            profilePhoto: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&h=400&fit=crop&crop=faces',
+            bio: 'Frontend architect with a passion for clean code and beautiful interfaces.',
+            location: 'Barcelona, Spain',
+            experience: '9 years',
+            interests: ['Web Performance', 'Accessibility', 'Design Systems'],
+            lookingFor: 'mentor',
+            availability: 'flexible',
+        },
+        {
+            name: 'Aisha Khan',
+            age: 28,
+            skills: ['Rust', 'WebAssembly', 'System Programming', 'Performance'],
+            profilePhoto: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400&h=400&fit=crop&crop=faces',
+            bio: 'Systems programmer building the next generation of web applications.',
+            location: 'Toronto, Canada',
+            experience: '5 years',
+            interests: ['Systems Programming', 'WebAssembly', 'Low-level Optimization'],
+            lookingFor: 'co-founder',
+            availability: 'full-time',
+        }
+    ];
+
+    function addSampleUsers() {
+        try {
+            // Get existing users
+            const existingUsers = JSON.parse(localStorage.getItem('allUsers') || '[]');
+
+            // Create users with proper structure
+            const newUsers = sampleUsers.map((user, index) => ({
+                id: 'sample-' + Date.now() + '-' + index,
+                _id: 'sample-' + Date.now() + '-' + index,
+                email: user.name.toLowerCase().replace(' ', '.') + '@example.com',
+                ...user,
+                createdAt: new Date()
+            }));
+
+            // Combine with existing users
+            const allUsers = [...existingUsers, ...newUsers];
+
+            // Save to localStorage
+            localStorage.setItem('allUsers', JSON.stringify(allUsers));
+
+            // Show success message
+            document.getElementById('result').innerHTML = `
+                <div class="success">
+                    <h3>✅ Success!</h3>
+                    <p>Added ${newUsers.length} sample users!</p>
+                    <p>Total users: ${allUsers.length}</p>
+                    <p><strong>Go to the app and start swiping!</strong></p>
+                </div>
+            `;
+
+            // Show user list
+            showUserList();
+
+        } catch (error) {
+            document.getElementById('result').innerHTML = `
+                <div style="background: #4a2b2b; border: 1px solid #f44336; padding: 15px; border-radius: 5px; margin: 20px 0;">
+                    <p>❌ Error: ${error.message}</p>
+                </div>
+            `;
+        }
+    }
+
+    function clearAllUsers() {
+        if (confirm('Are you sure you want to clear all users? This will also clear your profile!')) {
+            localStorage.removeItem('allUsers');
+            localStorage.removeItem('currentUser');
+            localStorage.removeItem('matches');
+            localStorage.removeItem('messages');
+
+            document.getElementById('result').innerHTML = `
+                <div class="success">
+                    <h3>🗑️ Cleared!</h3>
+                    <p>All users, matches, and messages have been removed.</p>
+                </div>
+            `;
+
+            document.getElementById('usersList').innerHTML = '';
+        }
+    }
+
+    function showUserList() {
+        const allUsers = JSON.parse(localStorage.getItem('allUsers') || '[]');
+
+        if (allUsers.length === 0) {
+            document.getElementById('usersList').innerHTML = '<p>No users yet.</p>';
+            return;
+        }
+
+        const usersHTML = allUsers.map(user => `
+            <div class="user-card">
+                <img src="${user.profilePhoto}" alt="${user.name}" class="user-photo">
+                <div>
+                    <h4 style="margin: 0;">${user.name}, ${user.age}</h4>
+                    <p style="margin: 5px 0; color: #aaa; font-size: 14px;">${user.location}</p>
+                    <p style="margin: 5px 0; font-size: 12px; color: #999;">${user.skills.slice(0, 3).join(', ')}</p>
+                </div>
+            </div>
+        `).join('');
+
+        document.getElementById('usersList').innerHTML = `
+            <h3>Current Users (${allUsers.length}):</h3>
+            <div class="user-list">
+                ${usersHTML}
+            </div>
+        `;
+    }
+
+    // Show existing users on load
+    window.addEventListener('load', showU
+st);
+</script>
+</body>
+</html>
