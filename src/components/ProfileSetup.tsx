@@ -1,13 +1,13 @@
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { ArrowLeft, ArrowRight, Upload, X } from 'lucide-react';
-import { User, ProfileFormData } from '../types';
-import { generateId, fileToBase64 } from '../utils/storage';
+import { ArrowLeft, ArrowRight, Upload, X, AlertCircle } from 'lucide-react';
+import { ProfileFormData } from '../types';
+import { authAPI } from '../services/api';
 import { commonSkills, interests } from '../utils/mockData';
 import CrewlyXLogo from './CrewlyXLogo';
 
 interface Props {
-  onComplete: (user: User) => void;
+  onComplete: (userData: any) => void;
 }
 
 type Step = 'basic' | 'photo' | 'skills' | 'preferences' | 'bio';
@@ -17,6 +17,8 @@ const ProfileSetup = ({ onComplete }: Props) => {
   const [selectedSkills, setSelectedSkills] = useState<string[]>([]);
   const [selectedInterests, setSelectedInterests] = useState<string[]>([]);
   const [photoPreview, setPhotoPreview] = useState<string>('');
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
   
   const { register, handleSubmit, watch, setValue, formState: { errors } } = useForm<ProfileFormData>({
     defaultValues: {
@@ -79,25 +81,30 @@ const ProfileSetup = ({ onComplete }: Props) => {
 
   const onSubmit = async (data: ProfileFormData) => {
     try {
-      const user: User = {
-        id: generateId(),
+      setError('');
+      setLoading(true);
+      
+      const userData = {
         name: data.name,
         email: data.email,
+        password: data.password,
         age: data.age,
+        bio: data.bio || '',
         skills: selectedSkills,
-        profilePhoto: photoPreview || 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&h=400&fit=crop&crop=face',
-        bio: data.bio,
-        location: data.location,
-        experience: data.experience,
+        location: data.location || '',
         interests: selectedInterests,
-        lookingFor: data.lookingFor,
-        availability: data.availability,
-        createdAt: new Date(),
+        lookingFor: data.lookingFor || 'any',
+        availability: data.availability || 'flexible',
+        experience: data.experience || '',
+        profilePhoto: photoPreview || 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&h=400&fit=crop&crop=face'
       };
 
-      onComplete(user);
-    } catch (error) {
+      await onComplete(userData);
+    } catch (error: any) {
+      setError(error.message || 'Error creating profile. Please try again.');
       console.error('Error creating user:', error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -132,6 +139,27 @@ const ProfileSetup = ({ onComplete }: Props) => {
                 placeholder="your@email.com"
               />
               {errors.email && <p className="text-accent-400 text-sm mt-1">{errors.email.message}</p>}
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-2">Password</label>
+              <input
+                {...register('password', { 
+                  required: 'Password is required',
+                  minLength: {
+                    value: 6,
+                    message: 'Password must be at least 6 characters'
+                  },
+                  pattern: {
+                    value: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
+                    message: 'Password must contain uppercase, lowercase, and number'
+                  }
+                })}
+                type="password"
+                className="w-full px-4 py-3 bg-navy-800/80 border border-gray-600/50 rounded-xl text-white placeholder-gray-400 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all duration-200"
+                placeholder="Enter a secure password"
+              />
+              {errors.password && <p className="text-accent-400 text-sm mt-1">{errors.password.message}</p>}
             </div>
 
             <div>
@@ -356,6 +384,14 @@ const ProfileSetup = ({ onComplete }: Props) => {
             <p className="text-gray-400">{steps[currentStepIndex].description}</p>
           </div>
 
+          {/* Error Message */}
+          {error && (
+            <div className="mb-6 p-4 bg-red-500/20 border border-red-500/30 rounded-xl flex items-start space-x-3">
+              <AlertCircle className="w-5 h-5 text-red-300 flex-shrink-0 mt-0.5" />
+              <p className="text-sm text-red-200">{error}</p>
+            </div>
+          )}
+
           <form onSubmit={handleSubmit(onSubmit)}>
             {renderStepContent()}
 
@@ -375,8 +411,9 @@ const ProfileSetup = ({ onComplete }: Props) => {
                 <button
                   type="submit"
                   className="btn-primary flex items-center gap-2"
+                  disabled={loading}
                 >
-                  Complete Profile
+                  {loading ? 'Creating...' : 'Complete Profile'}
                   <ArrowRight className="w-4 h-4" />
                 </button>
               ) : (

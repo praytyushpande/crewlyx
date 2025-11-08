@@ -223,7 +223,7 @@ const seedMessages = async (matches, users) => {
   try {
     // Add a sample message in the first match
     const message1 = new Message({
-      match: matches[0]._id,
+      matchId: matches[0]._id,
       sender: users[0]._id,
       content: 'Hey Sarah! I saw your design portfolio and I\'m really impressed. Would love to collaborate!',
       createdAt: new Date()
