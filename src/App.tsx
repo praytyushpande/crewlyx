@@ -1,106 +1,58 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { User } from './types';
-import { authAPI } from './services/api';
 
 // Components
-import LandingPage from './components/LandingPage';
-import Login from './components/Login';
 import ProfileSetup from './components/ProfileSetup';
 import SwipeCards from './components/SwipeCards';
 import Matches from './components/Matches';
 import Profile from './components/Profile';
 import Navigation from './components/Navigation';
-
-// Demo mode - set to true to skip authentication
-const DEMO_MODE = true;
-
-// Mock user for demo mode
-const DEMO_USER: User = {
-  id: 'demo-user-123',
-  _id: 'demo-user-123',
-  name: 'Demo User',
-  email: 'demo@crewlyx.com',
-  age: 25,
-  skills: ['React', 'TypeScript', 'Node.js'],
-  profilePhoto: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&h=400&fit=crop&crop=face',
-  bio: 'Demo user - exploring CrewlyX features',
-  location: 'Demo City',
-  experience: '3 years',
-  interests: ['Coding', 'Startups', 'AI'],
-  lookingFor: 'co-founder',
-  availability: 'flexible',
-  createdAt: new Date(),
-};
+import Chat from './components/Chat';
 
 function App() {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Check if user is logged in
-    const initializeApp = async () => {
-      // If demo mode, skip authentication
-      if (DEMO_MODE) {
-        setCurrentUser(DEMO_USER);
-        setLoading(false);
-        return;
+    // Check if user profile exists in localStorage
+    const savedUser = localStorage.getItem('currentUser');
+    if (savedUser) {
+      try {
+        setCurrentUser(JSON.parse(savedUser));
+      } catch (error) {
+        console.error('Error loading user:', error);
       }
-
-      const token = localStorage.getItem('token');
-      
-      if (token) {
-        try {
-          const user = await authAPI.getCurrentUser();
-          setCurrentUser(user);
-        } catch (error) {
-          console.error('Failed to get current user:', error);
-          localStorage.removeItem('token');
-        }
-      }
-      
-      setLoading(false);
-    };
-
-    initializeApp();
+    }
+    setLoading(false);
   }, []);
 
-  const handleLoginSuccess = async () => {
-    try {
-      const user = await authAPI.getCurrentUser();
-      setCurrentUser(user);
-    } catch (error) {
-      console.error('Failed to get current user after login:', error);
-    }
+  const handleProfileComplete = (userData: any) => {
+    const user: User = {
+      id: 'user-' + Date.now(),
+      _id: 'user-' + Date.now(),
+      name: userData.name,
+      email: userData.email || 'user@crewlyx.com',
+      age: Number(userData.age),
+      skills: userData.skills || [],
+      profilePhoto: userData.profilePhoto || 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&h=400&fit=crop&crop=face',
+      bio: userData.bio || '',
+      location: userData.location || '',
+      experience: userData.experience || '',
+      interests: userData.interests || [],
+      lookingFor: userData.lookingFor || 'any',
+      availability: userData.availability || 'flexible',
+      createdAt: new Date(),
+    };
+
+    // Save to localStorage
+    localStorage.setItem('currentUser', JSON.stringify(user));
+    setCurrentUser(user);
   };
 
-  const handleUserRegistration = async (userData: any) => {
-    try {
-      const result = await authAPI.register(userData);
-      // After successful registration, get the current user
-      const user = await authAPI.getCurrentUser();
-      setCurrentUser(user);
-    } catch (error: any) {
-      console.error('Registration error:', error);
-      alert(error.message || 'Registration failed. Please try again.');
-      throw error;
-    }
-  };
-
-  const handleLogout = async () => {
-    try {
-      if (!DEMO_MODE) {
-        await authAPI.logout();
-      }
-    } catch (error) {
-      console.error('Logout error:', error);
-    } finally {
-      setCurrentUser(null);
-      if (DEMO_MODE) {
-        // In demo mode, just reload to go back to swipe
-        window.location.reload();
-      }
-    }
+  const handleLogout = () => {
+    localStorage.removeItem('currentUser');
+    setCurrentUser(null);
   };
 
   if (loading) {
@@ -118,31 +70,17 @@ function App() {
     <Router>
       <div className="min-h-screen">
         <Routes>
-          {/* Public routes */}
-          <Route 
-            path="/" 
-            element={
-              currentUser ? <Navigate to="/swipe" replace /> : <LandingPage />
-            } 
-          />
-          <Route 
-            path="/login" 
-            element={
-              currentUser ? 
-                <Navigate to="/swipe" replace /> : 
-                <Login onLoginSuccess={handleLoginSuccess} />
-            } 
-          />
+          {/* Profile Setup Route */}
           <Route 
             path="/setup" 
             element={
               currentUser ? 
                 <Navigate to="/swipe" replace /> : 
-                <ProfileSetup onComplete={handleUserRegistration} />
+                <ProfileSetup onComplete={handleProfileComplete} />
             } 
           />
 
-          {/* Protected routes */}
+          {/* Main App Routes */}
           {currentUser ? (
             <>
               <Route path="/swipe" element={
@@ -163,10 +101,20 @@ function App() {
                   <Navigation />
                 </div>
               } />
+              <Route path="/chat/:matchId" element={
+                <div className="pb-20">
+                  <Chat currentUser={currentUser} />
+                  <Navigation />
+                </div>
+              } />
+              <Route path="/" element={<Navigate to="/swipe" replace />} />
               <Route path="*" element={<Navigate to="/swipe" replace />} />
             </>
           ) : (
-            <Route path="*" element={<Navigate to="/" replace />} />
+            <>
+              <Route path="/" element={<Navigate to="/setup" replace />} />
+              <Route path="*" element={<Navigate to="/setup" replace />} />
+            </>
           )}
         </Routes>
       </div>

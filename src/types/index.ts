@@ -41,7 +41,7 @@ export interface Message {
 export interface ProfileFormData {
   name: string;
   email: string;
-  password: string;
+  password?: string;
   age: number;
   skills: string[];
   profilePhoto: File | null;

@@ -498,15 +498,37 @@ const SwipeCards = ({ currentUser }: Props) => {
             </p>
             <div className="flex gap-4">
               <button
-                onClick={() => setShowMatchModal(false)}
+                onClick={() => {
+                  setShowMatchModal(false);
+                  // Save match to localStorage
+                  const matches = JSON.parse(localStorage.getItem('matches') || '[]');
+                  const newMatch = {
+                    id: 'match-' + Date.now(),
+                    user: matchedUser,
+                    createdAt: new Date()
+                  };
+                  matches.push(newMatch);
+                  localStorage.setItem('matches', JSON.stringify(matches));
+                }}
                 className="btn-secondary flex-1"
               >
                 Keep Discovering
               </button>
               <button
                 onClick={() => {
+                  // Save match to localStorage
+                  const matches = JSON.parse(localStorage.getItem('matches') || '[]');
+                  const newMatch = {
+                    id: 'match-' + Date.now(),
+                    user: matchedUser,
+                    createdAt: new Date()
+                  };
+                  matches.push(newMatch);
+                  localStorage.setItem('matches', JSON.stringify(matches));
+                  
                   setShowMatchModal(false);
-                  // Navigate to matches would go here
+                  // Navigate to chat
+                  window.location.href = `/chat/${newMatch.id}`;
                 }}
                 className="btn-primary flex-1"
               >

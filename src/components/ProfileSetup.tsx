@@ -86,8 +86,7 @@ const ProfileSetup = ({ onComplete }: Props) => {
       
       const userData = {
         name: data.name,
-        email: data.email,
-        password: data.password,
+        email: data.email || '',
         age: Number(data.age),
         bio: data.bio || '',
         skills: selectedSkills,
@@ -99,7 +98,7 @@ const ProfileSetup = ({ onComplete }: Props) => {
         profilePhoto: photoPreview || 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&h=400&fit=crop&crop=face'
       };
 
-      // Call the onComplete which should handle registration
+      // Call the onComplete with user data
       await onComplete(userData);
     } catch (error: any) {
       setError(error.message || 'Error creating profile. Please try again.');
@@ -126,10 +125,9 @@ const ProfileSetup = ({ onComplete }: Props) => {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">Email</label>
+              <label className="block text-sm font-medium text-gray-300 mb-2">Email (Optional)</label>
               <input
                 {...register('email', { 
-                  required: 'Email is required',
                   pattern: {
                     value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
                     message: 'Invalid email address'
@@ -137,30 +135,9 @@ const ProfileSetup = ({ onComplete }: Props) => {
                 })}
                 type="email"
                 className="w-full px-4 py-3 bg-navy-800/80 border border-gray-600/50 rounded-xl text-white placeholder-gray-400 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all duration-200"
-                placeholder="your@email.com"
+                placeholder="your@email.com (optional)"
               />
               {errors.email && <p className="text-accent-400 text-sm mt-1">{errors.email.message}</p>}
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">Password</label>
-              <input
-                {...register('password', { 
-                  required: 'Password is required',
-                  minLength: {
-                    value: 6,
-                    message: 'Password must be at least 6 characters'
-                  },
-                  pattern: {
-                    value: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
-                    message: 'Password must contain uppercase, lowercase, and number'
-                  }
-                })}
-                type="password"
-                className="w-full px-4 py-3 bg-navy-800/80 border border-gray-600/50 rounded-xl text-white placeholder-gray-400 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all duration-200"
-                placeholder="Enter a secure password"
-              />
-              {errors.password && <p className="text-accent-400 text-sm mt-1">{errors.password.message}</p>}
             </div>
 
             <div>

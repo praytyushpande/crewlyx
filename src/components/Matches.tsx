@@ -1,39 +1,24 @@
 import { useState, useEffect } from 'react';
-import { MessageCircle, Heart, Clock, Send } from 'lucide-react';
-import { User as UserType, Match } from '../types';
-import { storage } from '../utils/storage';
+import { useNavigate } from 'react-router-dom';
+import { MessageCircle, Heart, Clock } from 'lucide-react';
+import { User as UserType } from '../types';
 
 interface Props {
   currentUser: UserType;
 }
 
 const Matches = ({ currentUser }: Props) => {
-  const [matches, setMatches] = useState<Array<Match & { user: UserType }>>([]);
-  const [selectedMatch, setSelectedMatch] = useState<Match & { user: UserType } | null>(null);
+  const navigate = useNavigate();
+  const [matches, setMatches] = useState<Array<any>>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     loadMatches();
-  }, [currentUser]);
+  }, []);
 
   const loadMatches = () => {
-    const allMatches = storage.getMatches();
-    const allUsers = storage.getUsers();
-    
-    const userMatches = allMatches
-      .filter(match => match.users.includes(currentUser.id))
-      .map(match => {
-        const otherUserId = match.users.find(id => id !== currentUser.id);
-        const otherUser = allUsers.find(user => user.id === otherUserId);
-        return {
-          ...match,
-          user: otherUser!
-        };
-      })
-      .filter(match => match.user) // Filter out matches where user wasn't found
-      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-
-    setMatches(userMatches);
+    const storedMatches = JSON.parse(localStorage.getItem('matches') || '[]');
+    setMatches(storedMatches);
     setLoading(false);
   };
 
@@ -55,77 +40,8 @@ const Matches = ({ currentUser }: Props) => {
     );
   }
 
-  if (selectedMatch) {
-    return (
-      <div className="min-h-screen flex flex-col">
-        {/* Chat Header */}
-        <div className="card-glow bg-white/5 border-b border-white/10 p-4">
-          <div className="flex items-center gap-3">
-            <button
-              onClick={() => setSelectedMatch(null)}
-              className="text-gray-400 hover:text-white"
-            >
-              ←
-            </button>
-            <img
-              src={selectedMatch.user.profilePhoto}
-              alt={selectedMatch.user.name}
-              className="w-10 h-10 rounded-full object-cover"
-            />
-            <div>
-              <h2 className="font-semibold text-white">{selectedMatch.user.name}</h2>
-              <p className="text-sm text-gray-400">
-                Matched {formatDate(selectedMatch.createdAt)}
-              </p>
-            </div>
-          </div>
-        </div>
-
-        {/* Messages Area */}
-        <div className="flex-1 p-4">
-          <div className="text-center mb-6">
-            <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-r from-primary-500 to-accent-500 mb-3">
-              <Heart className="w-8 h-8 text-white" />
-            </div>
-            <h3 className="text-lg font-semibold text-white mb-2">It's a Match!</h3>
-            <p className="text-gray-400 text-sm">
-              Start a conversation with {selectedMatch.user.name}
-            </p>
-          </div>
-
-          {/* Sample starter messages */}
-          <div className="space-y-3 mb-6">
-            <div className="card-glow bg-white/5 border border-white/10 rounded-2xl p-4">
-              <p className="text-white text-sm mb-2">👋 Hey! I see you're into {selectedMatch.user.skills[0]}. I'd love to chat about potential collaboration!</p>
-              <button className="text-primary-400 text-xs hover:text-primary-300">Send this message</button>
-            </div>
-            <div className="card-glow bg-white/5 border border-white/10 rounded-2xl p-4">
-              <p className="text-white text-sm mb-2">🚀 Hi {selectedMatch.user.name}! Your profile caught my attention. Want to discuss some project ideas?</p>
-              <button className="text-primary-400 text-xs hover:text-primary-300">Send this message</button>
-            </div>
-          </div>
-        </div>
-
-        {/* Message Input */}
-        <div className="p-4 border-t border-white/10">
-          <div className="flex gap-3">
-            <input
-              type="text"
-              placeholder="Type a message..."
-              className="flex-1 px-4 py-3 bg-white/10 border border-white/20 rounded-2xl text-white placeholder-gray-400 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-            />
-            <button className="w-12 h-12 rounded-full bg-primary-500 flex items-center justify-center text-white hover:bg-primary-600 transition-colors">
-              <Send className="w-5 h-5" />
-            </button>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="min-h-screen px-6 py-8">
-      {/* Header */}
       <div className="text-center mb-8">
         <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-gradient-to-r from-primary-500 to-accent-500 mb-4">
           <MessageCircle className="w-6 h-6 text-white" />
@@ -141,10 +57,10 @@ const Matches = ({ currentUser }: Props) => {
           </div>
           <h2 className="text-xl font-bold text-white mb-4">No Matches Yet</h2>
           <p className="text-gray-400 mb-8 max-w-sm mx-auto">
-            Keep swiping to find people who share your interests and want to build something amazing together!
+            Keep swiping to find people who share your interests\!
           </p>
           <button 
-            onClick={() => window.location.href = '/swipe'}
+            onClick={() => navigate('/swipe')}
             className="btn-primary"
           >
             Start Swiping
@@ -155,7 +71,7 @@ const Matches = ({ currentUser }: Props) => {
           {matches.map((match) => (
             <div
               key={match.id}
-              onClick={() => setSelectedMatch(match)}
+              onClick={() => navigate(`/chat/${match.id}`)}
               className="card-glow bg-white/5 border border-white/10 rounded-2xl p-4 cursor-pointer hover:bg-white/10 transition-all duration-200"
             >
               <div className="flex items-center gap-4">
@@ -184,7 +100,7 @@ const Matches = ({ currentUser }: Props) => {
                   </p>
                   
                   <div className="flex flex-wrap gap-1">
-                    {match.user.skills.slice(0, 3).map((skill) => (
+                    {match.user.skills.slice(0, 3).map((skill: string) => (
                       <span key={skill} className="text-xs px-2 py-1 bg-primary-500/20 text-primary-300 rounded-full">
                         {skill}
                       </span>
