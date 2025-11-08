@@ -88,7 +88,7 @@ const ProfileSetup = ({ onComplete }: Props) => {
         name: data.name,
         email: data.email,
         password: data.password,
-        age: data.age,
+        age: Number(data.age),
         bio: data.bio || '',
         skills: selectedSkills,
         location: data.location || '',
@@ -99,6 +99,7 @@ const ProfileSetup = ({ onComplete }: Props) => {
         profilePhoto: photoPreview || 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&h=400&fit=crop&crop=face'
       };
 
+      // Call the onComplete which should handle registration
       await onComplete(userData);
     } catch (error: any) {
       setError(error.message || 'Error creating profile. Please try again.');

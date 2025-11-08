@@ -48,10 +48,13 @@ function App() {
 
   const handleUserRegistration = async (userData: any) => {
     try {
-      const { user } = await authAPI.register(userData);
+      const result = await authAPI.register(userData);
+      // After successful registration, get the current user
+      const user = await authAPI.getCurrentUser();
       setCurrentUser(user);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Registration error:', error);
+      alert(error.message || 'Registration failed. Please try again.');
       throw error;
     }
   };
