@@ -12,6 +12,27 @@ import Matches from './components/Matches';
 import Profile from './components/Profile';
 import Navigation from './components/Navigation';
 
+// Demo mode - set to true to skip authentication
+const DEMO_MODE = true;
+
+// Mock user for demo mode
+const DEMO_USER: User = {
+  id: 'demo-user-123',
+  _id: 'demo-user-123',
+  name: 'Demo User',
+  email: 'demo@crewlyx.com',
+  age: 25,
+  skills: ['React', 'TypeScript', 'Node.js'],
+  profilePhoto: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&h=400&fit=crop&crop=face',
+  bio: 'Demo user - exploring CrewlyX features',
+  location: 'Demo City',
+  experience: '3 years',
+  interests: ['Coding', 'Startups', 'AI'],
+  lookingFor: 'co-founder',
+  availability: 'flexible',
+  createdAt: new Date(),
+};
+
 function App() {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
@@ -19,6 +40,13 @@ function App() {
   useEffect(() => {
     // Check if user is logged in
     const initializeApp = async () => {
+      // If demo mode, skip authentication
+      if (DEMO_MODE) {
+        setCurrentUser(DEMO_USER);
+        setLoading(false);
+        return;
+      }
+
       const token = localStorage.getItem('token');
       
       if (token) {
@@ -61,11 +89,17 @@ function App() {
 
   const handleLogout = async () => {
     try {
-      await authAPI.logout();
+      if (!DEMO_MODE) {
+        await authAPI.logout();
+      }
     } catch (error) {
       console.error('Logout error:', error);
     } finally {
       setCurrentUser(null);
+      if (DEMO_MODE) {
+        // In demo mode, just reload to go back to swipe
+        window.location.reload();
+      }
     }
   };
 
