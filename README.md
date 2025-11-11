@@ -232,7 +232,7 @@ crewlyx/
 
 ## 🔌 API Documentation
 
-### Authentication
+## Authentication
 
 #### Register
 
